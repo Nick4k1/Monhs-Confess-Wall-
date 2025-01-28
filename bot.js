@@ -6,12 +6,12 @@ const app = express();
 app.use(bodyParser.json());
 
 // Facebook App Credentials
-const VERIFY_TOKEN = "your_verify_token"; // For verifying the webhook
-const PAGE_ACCESS_TOKEN = "your_page_access_token"; // Page token
+const VERIFY_TOKEN = "bot"; // For verifying the webhook
+const PAGE_ACCESS_TOKEN = "EAAUG0iogqEYBOzlhPBXXhYrrZAuwDxFpFo6OumL2rVEG650CZAArBhszRpSaTBo8mpCU4Hr1L25oUYp1xV1RV7xwEjiVqQggZApZBWu8zZAk9qLl37qC9ighzJgOx6XSnJYrriU0zZAbL8IubsJC4ssH1CnnF5jEAaGE3xv7y4hd43jj1ZAkIHtHDsWHa66XDazlQZDZD"; // Page token
 
 // Function to post to the Facebook page
 async function postToFacebookPage(message) {
-    const PAGE_ID = "your_page_id";
+    const PAGE_ID = "61572215923283";
     const url = `https://graph.facebook.com/${PAGE_ID}/feed`;
 
     try {
