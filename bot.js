@@ -6,7 +6,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // Facebook App Credentials
-const VERIFY_TOKEN = "bot"; // For verifying the webhook
+const VERIFY_TOKEN = "bot";
 const PAGE_ACCESS_TOKEN = "EAAUG0iogqEYBOzlhPBXXhYrrZAuwDxFpFo6OumL2rVEG650CZAArBhszRpSaTBo8mpCU4Hr1L25oUYp1xV1RV7xwEjiVqQggZApZBWu8zZAk9qLl37qC9ighzJgOx6XSnJYrriU0zZAbL8IubsJC4ssH1CnnF5jEAaGE3xv7y4hd43jj1ZAkIHtHDsWHa66XDazlQZDZD"; // Page token
 
 // Function to post to the Facebook page
@@ -21,7 +21,7 @@ async function postToFacebookPage(message) {
         console.log("Post ID:", response.data.id);
         return `Confession posted successfully! Post ID: ${response.data.id}`;
     } catch (error) {
-        console.error("Error posting to Facebook Page:", error.response.data);
+        console.error("Error posting to Facebook Page:", error.response?.data || error.message);
         return "Failed to post the confession.";
     }
 }
@@ -41,7 +41,7 @@ async function sendMessage(senderId, messageText) {
         );
         console.log("Message sent to user:", messageText);
     } catch (error) {
-        console.error("Error sending message:", error.response.data);
+        console.error("Error sending message:", error.response?.data || error.message);
     }
 }
 
@@ -63,9 +63,8 @@ app.get("/webhook", (req, res) => {
 app.post("/webhook", async (req, res) => {
     const body = req.body;
 
-    // Check for page events
     if (body.object === "page") {
-        body.entry.forEach(async (entry) => {
+        for (const entry of body.entry) {
             const webhookEvent = entry.messaging[0];
 
             if (webhookEvent && webhookEvent.message && webhookEvent.message.text) {
@@ -74,7 +73,6 @@ app.post("/webhook", async (req, res) => {
 
                 console.log(`Received message: ${receivedMessage}`);
 
-                // If the message starts with "confess"
                 if (receivedMessage.toLowerCase().startsWith("confess")) {
                     const confession = receivedMessage.replace("confess", "").trim();
 
@@ -83,13 +81,15 @@ app.post("/webhook", async (req, res) => {
                         const responseMessage = await postToFacebookPage(confession);
                         await sendMessage(senderId, "Your confession has been posted anonymously!");
                     } else {
-                        await sendMessage(senderId, "Please provide a confession after 'confess'.");
+                        // Inform the user to provide text after "confess"
+                        await sendMessage(senderId, "Please provide a confession after 'confess'. For example: 'confess I love pizza!'");
                     }
                 } else {
+                    // Inform the user how to use the bot
                     await sendMessage(senderId, "To submit a confession, send: confess <your_message>");
                 }
             }
-        });
+        }
 
         return res.status(200).send("EVENT_RECEIVED");
     } else {
@@ -102,3 +102,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Facebook Bot is running on port ${PORT}`);
 });
+                
