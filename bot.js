@@ -15,7 +15,7 @@ const userCooldowns = new Map(); // Track users' last command timestamps
 
 // Function to post to the Facebook page
 async function postToFacebookPage(message) {
-    const PAGE_ID = "61572215923283";
+    const PAGE_ID = "578878258632295";
     const url = `https://graph.facebook.com/${PAGE_ID}/feed`;
 
     try {
